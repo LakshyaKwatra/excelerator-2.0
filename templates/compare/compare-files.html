@@ -35,22 +35,72 @@
 
                 if(file1_is_xl) {
                     $('#id_file1column').empty();
+                    console.log("1 is empty");
                 }
                 if(file2_is_xl) {
                     $('#id_file2column').empty();
+                    console.log("2 is empty");
                 }
                 //var file1Sheet1Strings = JSON.parse('{{ json_file1sheet1strings| escapejs }}');
                 //var file1Sheet2Strings = JSON.parse('{{ json_file1sheet2strings| escapejs }}');
 
-                $('#id_file1sheet').on('change',function(){
-                    if(file1_is_xl){
+                $('#id_file1sheet').on('change',function() {
+                    if (file1_is_xl) {
                         var file1sheet = $('#id_file1sheet').val();
-                        for(var sheet in file1dropdown_dict){
-                            if(sheet == file1sheet){
-                                console.log(sheet,file1sheet);
-                                console.log("true");
+                        for (var sheet in file1dropdown_dict) {
+                            if (sheet == file1sheet) {
+                                console.log(sheet, file1sheet);
+                                console.log("true", file1dropdown_dict);
+                                console.log(file1dropdown_dict[sheet].length);
+                                var selectedDropdownArray = file1dropdown_dict[sheet];
+                                var length = selectedDropdownArray.length;
+                                var i;
+                                $('#id_file1column').empty();
+                                for (i = 0; i < length; i++) {
+                                    tempDropdownElement = selectedDropdownArray[i];
+                                    console.log(selectedDropdownArray[i]);
+                                    $('#id_file1column').append(
+                                        `
+                                        <option value = "${tempDropdownElement}">
+                                            ${tempDropdownElement}
+                                        </option>
+                                        `
+                                    );
+                                }
+                            } else {
+                                $('#id_file1column').empty();
+                            }
+
+                        }
+
+                    }
+                });
+
+                $('#id_file2sheet').on('change',function(){
+                    if(file2_is_xl){
+                        var file2sheet = $('#id_file2sheet').val();
+                        for(var sheet in file2dropdown_dict){
+                            if(sheet == file2sheet){
+                                console.log(sheet,file2sheet);
+                                console.log("true",file2dropdown_dict);
+                                console.log(file2dropdown_dict[sheet].length);
+                                var selectedDropdownArray = file2dropdown_dict[sheet];
+                                var length = selectedDropdownArray.length;
+                                var i;
+                                $('#id_file2column').empty();
+                                for(i = 0; i < length; i++){
+                                    tempDropdownElement = selectedDropdownArray[i];
+                                    console.log(selectedDropdownArray[i]);
+                                    $('#id_file2column').append(
+                                        `
+                                        <option value = "${tempDropdownElement}">
+                                            ${tempDropdownElement}
+                                        </option>
+                                        `
+                                    );
+                                }
                             }else {
-                                console.log("false");
+                                $('#id_file2column').empty();
                             }
 
                         }
@@ -58,8 +108,10 @@
                     }
 
 
+                });
+            });
 
-                    if(file1sheet == '1Sheet1'){
+                    /** if(file1sheet == '1Sheet1'){
                         $('#id_file1column').empty();
 
                         var length = file1Sheet1Strings.length;
@@ -93,12 +145,14 @@
                     }
                     else{
                         $('#id_file1column').empty();
-                    }
-                });
-            });
+                    } **/
         </script>
     </body>
 </html>
+
+
+
+
 
 
 {#{% load compare_extras %}#}
