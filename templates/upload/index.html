@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+{% if alert_message %}
+    <script>
+        alert("{{ alert_message }}");
+    </script>
+{% endif %}
+<div class="form-container">
+    <div class = "form-card">
+        <h5 class="form-card-header">Upload Your Files Here</h5>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form }}
+                <button class = "btn form-btn" type="submit" id="upload_files">
+                    Upload
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

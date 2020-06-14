@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <head>
+        <meta charset="UTF-8">
+        <title>Excelerator - Compare</title>
+    </head>
+    <body>
+        <header>
+            <h1>
+                Excelerator
+            </h1>
+        </header>
+        <div class = "filters">
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Press">
+            </form>
+        </div>
+
+        <script>
+            $(document).ready(function(){
+                console.log("Hello");
+
+                let objectData = JSON.parse('{{ json_object_data| escapejs }}')
+                let file1sheets = objectData.file1sheets;
+                let file2sheets = objectData.file2sheets;
+                let file1dropdown = objectData.file1dropdown;
+                let file2dropdown = objectData.file2dropdown;
+                let file1dropdown_dict = objectData.file1dropdown_dict;
+                let file2dropdown_dict = objectData.file2dropdown_dict;
+                let file1_is_xl = objectData.file1_is_xl;
+                let file2_is_xl = objectData.file2_is_xl;
+
+                if(file1_is_xl) {
+                    $('#id_file1column').empty();
+                }
+                if(file2_is_xl) {
+                    $('#id_file2column').empty();
+                }
+                //var file1Sheet1Strings = JSON.parse('{{ json_file1sheet1strings| escapejs }}');
+                //var file1Sheet2Strings = JSON.parse('{{ json_file1sheet2strings| escapejs }}');
+
+                $('#id_file1sheet').on('change',function(){
+                    if(file1_is_xl){
+                        var file1sheet = $('#id_file1sheet').val();
+                        for(var sheet in file1dropdown_dict){
+                            if(sheet == file1sheet){
+                                console.log(sheet,file1sheet);
+                                console.log("true");
+                            }else {
+                                console.log("false");
+                            }
+
+                        }
+
+                    }
+
+
+
+                    if(file1sheet == '1Sheet1'){
+                        $('#id_file1column').empty();
+
+                        var length = file1Sheet1Strings.length;
+                        var i;
+                        for(i = 0; i < length; i++){
+                            file1Sheet1String = file1Sheet1Strings[i];
+                            $('#id_file1column').append(
+                                `
+                                <option value = "${file1Sheet1String}">
+                                    ${file1Sheet1String}
+                                </option>
+                                `
+                            );
+                        }
+                    }
+                    else if(file1sheet == '1Sheet2'){
+                        $('#id_file1column').empty();
+
+                        var length = file1Sheet2Strings.length;
+                        var i;
+                        for(i = 0; i < length; i++){
+                            file1Sheet2String = file1Sheet2Strings[i];
+                            $('#id_file1column').append(
+                                `
+                                <option value = "${file1Sheet2String}">
+                                    ${file1Sheet2String}
+                                </option>
+                                `
+                            );
+                        }
+                    }
+                    else{
+                        $('#id_file1column').empty();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
+
+
+{#{% load compare_extras %}#}
+
+{#    <ul>#}
+{#        {% for key in target_data %}#}
+{#            <li><strong>{{ key }}: </strong>{{ target_data|get_item:key }}</li>#}
+{#        {% endfor %}#}
+{#    </ul>#}
+
