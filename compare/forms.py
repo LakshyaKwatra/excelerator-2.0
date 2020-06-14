@@ -19,8 +19,11 @@ class ComparisonForm(forms.Form):
         super(ComparisonForm, self).__init__(*args, **kwargs)
         self.fields['file1sheet'] = forms.ChoiceField(choices=self.get_choices_dict()['file1sheet_choices'])
         self.fields['file1sheet'].label = "First File Sheet"
+
         self.fields['file1column'] = forms.ChoiceField(choices=self.get_choices_dict()['file1column_choices'])
         self.fields['file1column'].label = "First File Column"
+        self.fields['file1column'].widget.attrs['required'] = 'required'
+
         self.fields['file2sheet'] = forms.ChoiceField(choices=self.get_choices_dict()['file2sheet_choices'])
         self.fields['file2sheet'].label = "Second File Sheet"
         self.fields['file2column'] = forms.ChoiceField(choices=self.get_choices_dict()['file2column_choices'])
@@ -39,11 +42,11 @@ class ComparisonForm(forms.Form):
         file2dropdown_dict = object_data['file2dropdown_dict']
         file1_is_xl = object_data['file1_is_xl']
         file2_is_xl = object_data['file2_is_xl']
-        FILE1SHEET_CHOICES = [(DEFAULT_CHOICE, DEFAULT_CHOICE)]
-        FILE2SHEET_CHOICES = [(DEFAULT_CHOICE, DEFAULT_CHOICE)]
-        FILE1COLUMN_CHOICES = [(DEFAULT_CHOICE, DEFAULT_CHOICE)]
-        FILE2COLUMN_CHOICES = [(DEFAULT_CHOICE, DEFAULT_CHOICE)]
-        PIVOT_COLUMN_CHOICES = [('No Pivot Required', 'No Pivot Required')]
+        FILE1SHEET_CHOICES = [("", DEFAULT_CHOICE)]
+        FILE2SHEET_CHOICES = [("", DEFAULT_CHOICE)]
+        FILE1COLUMN_CHOICES = [("", DEFAULT_CHOICE)]
+        FILE2COLUMN_CHOICES = [("", DEFAULT_CHOICE)]
+        PIVOT_COLUMN_CHOICES = [("", 'No Pivot Required')]
         if file1_is_xl:
             for sheet in file1sheets:
                 FILE1SHEET_CHOICES.append((sheet, sheet))

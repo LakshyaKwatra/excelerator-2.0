@@ -20,7 +20,10 @@
         </div>
 
         <script>
+
+
             $(document).ready(function(){
+
                 console.log("Hello");
 
                 let objectData = JSON.parse('{{ json_object_data| escapejs }}')
@@ -32,31 +35,48 @@
                 let file2dropdown_dict = objectData.file2dropdown_dict;
                 let file1_is_xl = objectData.file1_is_xl;
                 let file2_is_xl = objectData.file2_is_xl;
+                //let file1sheet_prev = $('#id_file1sheet').val();
+                //let file1dropdownArray_prev = [];
 
+                {# Setting up intial column values #}
                 if(file1_is_xl) {
                     $('#id_file1column').empty();
+                    $('#id_file1column').append(`<option value="">-----</option>`);
                     console.log("1 is empty");
                 }
                 if(file2_is_xl) {
                     $('#id_file2column').empty();
+                    $('#id_file2column').append(`<option value="">-----</option>`);
+
                     console.log("2 is empty");
                 }
+                $('#id_pivot_column').empty();
+                $('#id_pivot_column').append(`<option value="">No Pivot Required</option>`);
+
+
                 //var file1Sheet1Strings = JSON.parse('{{ json_file1sheet1strings| escapejs }}');
                 //var file1Sheet2Strings = JSON.parse('{{ json_file1sheet2strings| escapejs }}');
+
 
                 $('#id_file1sheet').on('change',function() {
                     if (file1_is_xl) {
                         var file1sheet = $('#id_file1sheet').val();
+                        console.log("Sheet Selected: ",file1sheet);
+
+                        {# Deleting existing file-1 pivots and file-1 columns #}
+                        $( "option[value^='File-1:']" ).remove();
+                        $('#id_file1column').empty();
+                        $('#id_file1column').append(`<option value="">-----</option>`);
+
+
+                        {# This checkflag if stays true after the end of iteration, then the selected option is ----- #}
                         let checkFlag1 = true;
                         for (var sheet in file1dropdown_dict) {
                             if (sheet == file1sheet) {
-                                console.log(sheet, file1sheet);
-                                console.log("true", file1dropdown_dict);
-                                console.log(file1dropdown_dict[sheet].length);
                                 var selectedDropdownArray = file1dropdown_dict[sheet];
                                 var length = selectedDropdownArray.length;
                                 var i;
-                                $('#id_file1column').empty();
+
                                 for (i = 0; i < length; i++) {
                                     tempDropdownElement = selectedDropdownArray[i];
                                     console.log(selectedDropdownArray[i]);
@@ -67,6 +87,13 @@
                                         </option>
                                         `
                                     );
+                                    $('#id_pivot_column').append(
+                                        `
+                                        <option value = "File-1: ${tempDropdownElement}">
+                                            File-1: ${tempDropdownElement}
+                                        </option>
+                                        `
+                                    );
                                 }
                                 checkFlag1 = false;
                                 break;
@@ -74,6 +101,8 @@
                         }
                         if(checkFlag1){
                             $('#id_file1column').empty();
+                            $('#id_file1column').append(`<option value="">-----</option>`);
+
                         }
                     }
                 });
@@ -81,6 +110,13 @@
                 $('#id_file2sheet').on('change',function(){
                     if(file2_is_xl){
                         var file2sheet = $('#id_file2sheet').val();
+
+                        {# Deleting existing file-2 pivots and file-2 columns #}
+                        $( "option[value^='File-2:']" ).remove();
+                        $('#id_file2column').empty();
+                        $('#id_file2column').append(`<option value="">-----</option>`);
+
+                        {# This checkflag if stays true after the end of iteration, then the selected option is ----- #}
                         let checkFlag2 = true;
                         for(var sheet in file2dropdown_dict){
                             if(sheet == file2sheet){
@@ -90,7 +126,7 @@
                                 var selectedDropdownArray = file2dropdown_dict[sheet];
                                 var length = selectedDropdownArray.length;
                                 var i;
-                                $('#id_file2column').empty();
+
                                 for(i = 0; i < length; i++){
                                     tempDropdownElement = selectedDropdownArray[i];
                                     console.log(selectedDropdownArray[i]);
@@ -101,6 +137,13 @@
                                         </option>
                                         `
                                     );
+                                    $('#id_pivot_column').append(
+                                        `
+                                        <option value = "File-2: ${tempDropdownElement}">
+                                            File-2: ${tempDropdownElement}
+                                        </option>
+                                        `
+                                    );
                                 }
                                 checkFlag2 = false;
                                 break;
@@ -108,6 +151,8 @@
                         }
                         if(checkFlag2){
                             $('#id_file2column').empty();
+                            $('#id_file2column').append(`<option value="">-----</option>`);
+
                         }
                     }
 
