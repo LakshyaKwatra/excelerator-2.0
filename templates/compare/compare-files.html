@@ -47,6 +47,7 @@
                 $('#id_file1sheet').on('change',function() {
                     if (file1_is_xl) {
                         var file1sheet = $('#id_file1sheet').val();
+                        let checkFlag1 = true;
                         for (var sheet in file1dropdown_dict) {
                             if (sheet == file1sheet) {
                                 console.log(sheet, file1sheet);
@@ -67,18 +68,20 @@
                                         `
                                     );
                                 }
-                            } else {
-                                $('#id_file1column').empty();
+                                checkFlag1 = false;
+                                break;
                             }
-
                         }
-
+                        if(checkFlag1){
+                            $('#id_file1column').empty();
+                        }
                     }
                 });
 
                 $('#id_file2sheet').on('change',function(){
                     if(file2_is_xl){
                         var file2sheet = $('#id_file2sheet').val();
+                        let checkFlag2 = true;
                         for(var sheet in file2dropdown_dict){
                             if(sheet == file2sheet){
                                 console.log(sheet,file2sheet);
@@ -99,12 +102,13 @@
                                         `
                                     );
                                 }
-                            }else {
-                                $('#id_file2column').empty();
+                                checkFlag2 = false;
+                                break;
                             }
-
                         }
-
+                        if(checkFlag2){
+                            $('#id_file2column').empty();
+                        }
                     }
 
 
