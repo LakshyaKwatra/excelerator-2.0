@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -11,7 +12,7 @@
                 Excelerator
             </h1>
         </header>
-        <div class = "filters">
+        <div class = "upload-filters">
             <form action="" method="POST">
                 {% csrf_token %}
                 {{ form.as_p }}
@@ -26,7 +27,8 @@
 
                 console.log("Hello");
 
-                let objectData = JSON.parse('{{ json_object_data| escapejs }}')
+                //let objectData = JSON.parse('{{ json_object_data| escapejs }}');
+                let objectData = JSON.parse($.getJSON({'url': "{% static "compare/data/object_data.json" %}",'async':false}).responseText);
                 let file1sheets = objectData.file1sheets;
                 let file2sheets = objectData.file2sheets;
                 let file1dropdown = objectData.file1dropdown;
@@ -35,24 +37,58 @@
                 let file2dropdown_dict = objectData.file2dropdown_dict;
                 let file1_is_xl = objectData.file1_is_xl;
                 let file2_is_xl = objectData.file2_is_xl;
+
                 //let file1sheet_prev = $('#id_file1sheet').val();
                 //let file1dropdownArray_prev = [];
 
                 {# Setting up intial column values #}
-                if(file1_is_xl) {
-                    $('#id_file1column').empty();
-                    $('#id_file1column').append(`<option value="">-----</option>`);
-                    console.log("1 is empty");
-                }
-                if(file2_is_xl) {
-                    $('#id_file2column').empty();
-                    $('#id_file2column').append(`<option value="">-----</option>`);
+                if("{{ isPOST }}" == "True"){
+                    $tempfield = $('#id_file1sheet');
+                    $tempselect = $tempfield.find("[value = '{{ select_file1sheet }}']");
+                    $tempselect.remove();
+                    $tempfield.append(`<option value='{{ select_file1sheet }}' selected>{{ select_file1sheet }}</option>`);
 
-                    console.log("2 is empty");
-                }
-                $('#id_pivot_column').empty();
-                $('#id_pivot_column').append(`<option value="">No Pivot Required</option>`);
+                    $tempfield = $('#id_file1column');
+                    $tempselect = $tempfield.find("[value = '{{ select_file1column }}']");
+                    $tempselect.remove();
+                    $tempfield.append(`<option value='{{ select_file1column }}' selected>{{ select_file1column }}</option>`);
 
+                    $tempfield = $('#id_file2sheet');
+                    $tempselect = $tempfield.find("[value = '{{ select_file2sheet }}']");
+                    $tempselect.remove();
+                    $tempfield.append(`<option value='{{ select_file2sheet }}' selected>{{ select_file2sheet }}</option>`);
+
+                    $tempfield = $('#id_file2column');
+                    $tempselect = $tempfield.find("[value = '{{ select_file2column }}']");
+                    $tempselect.remove();
+                    $tempfield.append(`<option value='{{ select_file2column }}' selected>{{ select_file2column }}</option>`);
+
+                    $tempfield = $('#id_pivot_column');
+                    $tempselect = $tempfield.find("[value = '{{ select_pivot_column }}']");
+                    $tempselect.remove();
+                    $tempfield.append(`<option value='{{ select_pivot_column }}' selected>{{ select_pivot_column }}</option>`);
+
+                    $tempfield = $('#id_filter');
+                    $tempselect = $tempfield.find("[value = '{{ select_filter }}']");
+                    $tempselect.remove();
+                    $tempfield.append(`<option value='{{ select_filter }}' selected>{{ select_filter }}</option>`);
+
+                }else {
+                    console.log(file1_is_xl, file1_is_xl == true)
+                    if (file1_is_xl) {
+                        $('#id_file1column').empty();
+                        $('#id_file1column').append(`<option value="">-----</option>`);
+                        console.log("1 is empty");
+                    }
+                    if (file2_is_xl) {
+                        $('#id_file2column').empty();
+                        $('#id_file2column').append(`<option value="">-----</option>`);
+
+                        console.log("2 is empty");
+                    }
+                    $('#id_pivot_column').empty();
+                    $('#id_pivot_column').append(`<option value="No Pivot Required">No Pivot Required</option>`);
+                }
 
                 //var file1Sheet1Strings = JSON.parse('{{ json_file1sheet1strings| escapejs }}');
                 //var file1Sheet2Strings = JSON.parse('{{ json_file1sheet2strings| escapejs }}');

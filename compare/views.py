@@ -8,6 +8,8 @@ import json
 import pandas as pd
 
 
+
+
 # def compare_files(request):
 #     target_data = get_object_data(Upload.objects.last())
 #     target_data_str = str(target_data)
@@ -36,13 +38,37 @@ import pandas as pd
 
 
 def compare_files(request):
-    context = {}
-    form = ComparisonForm()
-    object_data = get_object_data(Upload.objects.last())
-    json_object_data = json.dumps(object_data)
-    context['json_object_data'] = json_object_data
-    context['form'] = form
-    return render(request, 'compare/compare-files.html', context)
+    if request.method == 'POST':
+        context = {}
+        form = ComparisonForm()
+        filter_data = request.POST
+        select_file1sheet = filter_data.get('file1sheet')
+        select_file1column = filter_data.get('file1column')
+        select_file2sheet = filter_data.get('file2sheet')
+        select_file2column = filter_data.get('file2column')
+        select_pivot_column = filter_data.get('pivot_column')
+        select_filter = filter_data.get('filter')
+        context['isPOST'] = True
+        context['select_file1sheet'] = select_file1sheet
+        context['select_file1column'] = select_file1column
+        context['select_file2sheet'] = select_file2sheet
+        context['select_file2column'] = select_file2column
+        context['select_pivot_column'] = select_pivot_column
+        context['select_filter'] = select_filter
+        context['form'] = form
+        return render(request, 'compare/compare-files.html', context)
+    else:
+        context = {}
+        form = ComparisonForm()
+        object_data = get_object_data(Upload.objects.last())
+        #json_object_data = json.dumps(object_data)
+        #settings.JSON_OBJECT_DATA_CACHE = json_object_data
+        #context['json_object_data'] = json_object_data
+        with open('compare/static/compare/data/object_data.json', 'w') as json_file:  # writing JSON object
+            json.dump(object_data, json_file)
+        context['form'] = form
+        context['isPOST'] = False
+        return render(request, 'compare/compare-files.html', context)
 
 def get_object_data(object):
     target_object = object

@@ -13,7 +13,7 @@ class ComparisonForm(forms.Form):
     file2sheet = forms.ChoiceField(choices=[])
     file2column = forms.ChoiceField(choices=[])
     pivot_column = forms.ChoiceField(choices=[])
-    filters = forms.ChoiceField(choices=FILTER_CHOICES)
+    filter = forms.ChoiceField(choices=FILTER_CHOICES)
 
     def __init__(self, *args, **kwargs):
         super(ComparisonForm, self).__init__(*args, **kwargs)
@@ -30,7 +30,7 @@ class ComparisonForm(forms.Form):
         self.fields['file2column'].label = "Second File Column"
         self.fields['pivot_column'] = forms.ChoiceField(choices=self.get_choices_dict()['pivot_column_choices'])
         self.fields['pivot_column'].label = "Pivot Column"
-        self.fields['filters'].label = "Apply Filter"
+        self.fields['filter'].label = "Apply Filter"
 
     def get_choices_dict(self):
         object_data = views.get_object_data(Upload.objects.last())
@@ -46,7 +46,7 @@ class ComparisonForm(forms.Form):
         FILE2SHEET_CHOICES = [("", DEFAULT_CHOICE)]
         FILE1COLUMN_CHOICES = [("", DEFAULT_CHOICE)]
         FILE2COLUMN_CHOICES = [("", DEFAULT_CHOICE)]
-        PIVOT_COLUMN_CHOICES = [("", 'No Pivot Required')]
+        PIVOT_COLUMN_CHOICES = [("No Pivot Required", 'No Pivot Required')]
         if file1_is_xl:
             for sheet in file1sheets:
                 FILE1SHEET_CHOICES.append((sheet, sheet))
