@@ -71,7 +71,25 @@ body {
   cursor: pointer;
 }
 
+
+.download-button {
+  display: block;
+  float:right;
+  padding: 10px 20px;
+  border: none;
+  background-color: dodgerblue;
+  color: white;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+
 .comparison-form-button:hover {
+  background-color: royalblue;
+}
+
+.download-button:hover {
   background-color: royalblue;
 }
 
@@ -90,7 +108,7 @@ body {
 .comparison-table {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   border-collapse: collapse;
-  width: 100%;
+
 }
 
 .comparison-table td, .comparison-table th {

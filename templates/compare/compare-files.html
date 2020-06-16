@@ -20,8 +20,13 @@
             </form>
 
         {% if isPOST %}
-            <div class="table-container">
-                <table class="comparison-table">
+            <br>
+            <div align="center">
+            <button onclick="exportTableToExcel('tblData', 'comparison-table')" style="margin: 0 auto">Download Comparison Table</button>
+            </div>
+            <br>
+            <div class="table-container" >
+                <table class="comparison-table" id="tblData" style="width: auto; margin: 0 auto">
                     <thead>
                         <tr>
                             {% if select_pivot_column != 'No Pivot Required' %}
@@ -80,8 +85,33 @@
 
 
 
-
         <script>
+            function exportTableToExcel(tableID, filename = ''){
+                    var downloadLink;
+                    var dataType = 'application/vnd.ms-excel';
+                    var tableSelect = document.getElementById(tableID);
+                    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+                    filename = filename?filename+ '.xls':'excel_data.xls';
+
+                    downloadLink = document.createElement("a");
+                    document.body.appendChild(downloadLink);
+                    if(navigator.msSaveOrOpenBlob){
+                        var blob = new Blob(['\ufeff', tableHTML], {
+                            type: dataType
+                        });
+                        navigator.msSaveOrOpenBlob( blob, filename);
+                    }else{
+                        // Create a link to the file
+                        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+                        // Setting the file name
+                        downloadLink.download = filename;
+
+                        //triggering the function
+                        downloadLink.click();
+                    }
+                }
             $(document).ready(function(){
 
                 console.log("Hello");
