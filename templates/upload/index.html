@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
 
 
@@ -7,16 +8,16 @@
         alert("{{ alert_message }}");
     </script>
 {% endif %}
-<div class="form-container">
-    <div class = "form-card">
-        <h5 class="form-card-header">Upload Your Files Here</h5>
+    <br><br>
+<div align="center">
+    <div class = "card" style="width: 18rem;">
+        <h5 class="card-header">Upload Your Files Here</h5>
         <div class="card-body">
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" class="comparison-form">
                 {% csrf_token %}
-                {{ form }}
-                <button class = "btn form-btn" type="submit" id="upload_files">
-                    Upload
-                </button>
+                {{ form | crispy }}
+                <br>
+                <button class = "btn btn-primary" type="submit" id="upload_files">Upload</button>
             </form>
         </div>
     </div>

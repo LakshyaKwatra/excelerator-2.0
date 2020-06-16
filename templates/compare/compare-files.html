@@ -5,21 +5,20 @@
     <head>
         <meta charset="UTF-8">
         <title>Excelerator - Compare</title>
-        <link rel="stylesheet" type="text/css" href="{% static 'compare/css/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static "compare/css/style.css" %}">
+
     </head>
     <body>
-        <header>
-            <h1>
-                Excelerator
-            </h1>
-        </header>
-        <div class = "filter-form-container">
-            <form action="" method="POST">
+
+
+            <form action="" method="POST" class = "comparison-form-container">
+                <div class="comparison-form">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <input type="submit" value="Press">
+                </div>
+                <button type="submit" class="comparison-form-button">Compare</button>
             </form>
-        </div>
+
         {% if isPOST %}
             <div class="table-container">
                 <table class="comparison-table">
@@ -46,7 +45,7 @@
                                 {% endif %}
 
                                 {% if abc.0 != abc.1 %}
-                                    <tr class = "table-danger">
+                                    <tr class = "table-danger" style="background-color: rgba(255,50,100,0.5);">
                                         <td><strong>{{abc.2}}</strong></td>
                                         <td>{{ abc.0 }}</td>
                                         <td>{{ abc.1 }}</td>
@@ -65,7 +64,7 @@
                                     {% endif %}
                                 {% endif %}
                                 {% if ab.0 != ab.1 %}
-                                  <tr class = "table-danger">
+                                  <tr class = "table-danger" style="background-color: rgba(255,50,100,0.5);">
                                       <td>{{ ab.0 }}</td>
                                       <td>{{ ab.1 }}</td>
                                   </tr>
