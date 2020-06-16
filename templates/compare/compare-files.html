@@ -5,6 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Excelerator - Compare</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'compare/css/style.css' %}">
     </head>
     <body>
         <header>
@@ -12,31 +13,90 @@
                 Excelerator
             </h1>
         </header>
-        <div class = "upload-filters">
+        <div class = "filter-form-container">
             <form action="" method="POST">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" value="Press">
             </form>
         </div>
+        {% if isPOST %}
+            <div class="table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            {% if select_pivot_column != 'No Pivot Required' %}
+                                <th scope="col">{{ pivot_column_name }}</th>
+                            {% endif %}
+                            <th scope="col">{{ select_file1column }}</th>
+                            <th scope="col">{{ select_file2column }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if select_pivot_column != 'No Pivot Required' %}
+                            {% for abc in zipper %}
+                                {% if abc.0 == abc.1 %}
+                                    {% if abc.0 != '' or abc.1 != '' %}
+                                        <tr>
+                                            <td><strong>{{abc.2}}</strong></td>
+                                            <td>{{ abc.0 }}</td>
+                                            <td>{{ abc.1 }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if abc.0 != abc.1 %}
+                                    <tr class = "table-danger">
+                                        <td><strong>{{abc.2}}</strong></td>
+                                        <td>{{ abc.0 }}</td>
+                                        <td>{{ abc.1 }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% if select_pivot_column == 'No Pivot Required' %}
+                            {% for ab in zipper %}
+                                {% if ab.0 == ab.1 %}
+                                    {% if ab.0 != '' or ab.1 != '' %}
+                                        <tr>
+                                            <td>{{ ab.0 }}</td>
+                                            <td>{{ ab.1 }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endif %}
+                                {% if ab.0 != ab.1 %}
+                                  <tr class = "table-danger">
+                                      <td>{{ ab.0 }}</td>
+                                      <td>{{ ab.1 }}</td>
+                                  </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+
+
+
+
 
         <script>
-
-
             $(document).ready(function(){
 
                 console.log("Hello");
-
                 //let objectData = JSON.parse('{{ json_object_data| escapejs }}');
-                let objectData = JSON.parse($.getJSON({'url': "{% static "compare/data/object_data.json" %}",'async':false}).responseText);
-                let file1sheets = objectData.file1sheets;
-                let file2sheets = objectData.file2sheets;
-                let file1dropdown = objectData.file1dropdown;
-                let file2dropdown = objectData.file2dropdown;
-                let file1dropdown_dict = objectData.file1dropdown_dict;
-                let file2dropdown_dict = objectData.file2dropdown_dict;
-                let file1_is_xl = objectData.file1_is_xl;
-                let file2_is_xl = objectData.file2_is_xl;
+                var objectData = JSON.parse($.getJSON({'url': "{% static "compare/data/object_data.json" %}",'async':false}).responseText);
+                console.log(objectData);
+                var file1sheets = objectData.file1sheets;
+                var file2sheets = objectData.file2sheets;
+                var file1dropdown = objectData.file1dropdown;
+                var file2dropdown = objectData.file2dropdown;
+                var file1dropdown_dict = objectData.file1dropdown_dict;
+                var file2dropdown_dict =objectData.file2dropdown_dict;
+                var file1_is_xl = objectData.file1_is_xl;
+                var file2_is_xl = objectData.file2_is_xl;
 
                 //let file1sheet_prev = $('#id_file1sheet').val();
                 //let file1dropdownArray_prev = [];
@@ -91,7 +151,6 @@
                 }
 
                 //var file1Sheet1Strings = JSON.parse('{{ json_file1sheet1strings| escapejs }}');
-                //var file1Sheet2Strings = JSON.parse('{{ json_file1sheet2strings| escapejs }}');
 
 
                 $('#id_file1sheet').on('change',function() {
@@ -100,7 +159,7 @@
                         console.log("Sheet Selected: ",file1sheet);
 
                         {# Deleting existing file-1 pivots and file-1 columns #}
-                        $( "option[value^='File-1:']" ).remove();
+                        $( "option[value^='[File-1]: ']" ).remove();
                         $('#id_file1column').empty();
                         $('#id_file1column').append(`<option value="">-----</option>`);
 
@@ -108,7 +167,9 @@
                         {# This checkflag if stays true after the end of iteration, then the selected option is ----- #}
                         let checkFlag1 = true;
                         for (var sheet in file1dropdown_dict) {
+                            console.log(sheet,file1sheet)
                             if (sheet == file1sheet) {
+                                console.log("equal")
                                 var selectedDropdownArray = file1dropdown_dict[sheet];
                                 var length = selectedDropdownArray.length;
                                 var i;
@@ -125,8 +186,8 @@
                                     );
                                     $('#id_pivot_column').append(
                                         `
-                                        <option value = "File-1: ${tempDropdownElement}">
-                                            File-1: ${tempDropdownElement}
+                                        <option value = "[File-1]: ${tempDropdownElement}">
+                                            [File-1]: ${tempDropdownElement}
                                         </option>
                                         `
                                     );
@@ -148,7 +209,7 @@
                         var file2sheet = $('#id_file2sheet').val();
 
                         {# Deleting existing file-2 pivots and file-2 columns #}
-                        $( "option[value^='File-2:']" ).remove();
+                        $( "option[value^='[File-2]: ']" ).remove();
                         $('#id_file2column').empty();
                         $('#id_file2column').append(`<option value="">-----</option>`);
 
@@ -175,8 +236,8 @@
                                     );
                                     $('#id_pivot_column').append(
                                         `
-                                        <option value = "File-2: ${tempDropdownElement}">
-                                            File-2: ${tempDropdownElement}
+                                        <option value = "[File-2]: ${tempDropdownElement}">
+                                            [File-2]: ${tempDropdownElement}
                                         </option>
                                         `
                                     );
@@ -196,41 +257,7 @@
                 });
             });
 
-                    /** if(file1sheet == '1Sheet1'){
-                        $('#id_file1column').empty();
 
-                        var length = file1Sheet1Strings.length;
-                        var i;
-                        for(i = 0; i < length; i++){
-                            file1Sheet1String = file1Sheet1Strings[i];
-                            $('#id_file1column').append(
-                                `
-                                <option value = "${file1Sheet1String}">
-                                    ${file1Sheet1String}
-                                </option>
-                                `
-                            );
-                        }
-                    }
-                    else if(file1sheet == '1Sheet2'){
-                        $('#id_file1column').empty();
-
-                        var length = file1Sheet2Strings.length;
-                        var i;
-                        for(i = 0; i < length; i++){
-                            file1Sheet2String = file1Sheet2Strings[i];
-                            $('#id_file1column').append(
-                                `
-                                <option value = "${file1Sheet2String}">
-                                    ${file1Sheet2String}
-                                </option>
-                                `
-                            );
-                        }
-                    }
-                    else{
-                        $('#id_file1column').empty();
-                    } **/
         </script>
     </body>
 </html>

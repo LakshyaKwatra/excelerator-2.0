@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'upload.apps.UploadConfig',
     'compare.apps.CompareConfig',
-    'crispy_forms',
 ]
 
 MIDDLEWARE = [

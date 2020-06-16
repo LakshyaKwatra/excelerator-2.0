@@ -52,21 +52,21 @@ class ComparisonForm(forms.Form):
                 FILE1SHEET_CHOICES.append((sheet, sheet))
                 for column in file1dropdown_dict[sheet]:
                     FILE1COLUMN_CHOICES.append((column, column))
-                    PIVOT_COLUMN_CHOICES.append(('File-1: '+column, 'File-1: '+column))
+                    PIVOT_COLUMN_CHOICES.append(('[File-1]: '+column, '[File-1]: '+column))
         else:
             for column in file1dropdown:
                 FILE1COLUMN_CHOICES.append((column, column))
-                PIVOT_COLUMN_CHOICES.append(('File-1: '+column, 'File-1: '+column))
+                PIVOT_COLUMN_CHOICES.append(('[File-1]: '+column, '[File-1]: '+column))
         if file2_is_xl:
             for sheet in file2sheets:
                 FILE2SHEET_CHOICES.append((sheet, sheet))
                 for column in file2dropdown_dict[sheet]:
                     FILE2COLUMN_CHOICES.append((column, column))
-                    PIVOT_COLUMN_CHOICES.append(('File-2: '+column, 'File-2: '+column))
+                    PIVOT_COLUMN_CHOICES.append(('[File-2]: '+column, '[File-2]: '+column))
         else:
             for column in file2dropdown:
                 FILE2COLUMN_CHOICES.append((column, column))
-                PIVOT_COLUMN_CHOICES.append(('File-2: '+column, 'File-2: '+column))
+                PIVOT_COLUMN_CHOICES.append(('[File-2]: '+column, '[File-2]: '+column))
         context = {}
         context['file1sheet_choices'] = FILE1SHEET_CHOICES
         context['file2sheet_choices'] = FILE2SHEET_CHOICES

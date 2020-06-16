@@ -21,7 +21,7 @@ def upload_files(request):
 
 
 def have_proper_formats(f1, f2):
-    SUPPORTED_FORMATS = ['xls', 'xlsx', 'csv', 'tsv']
+    SUPPORTED_FORMATS = ['xls', 'xlsx']  #csv tsv
     file1_format = f1.name.split('.')[-1]
     file2_format = f2.name.split('.')[-1]
     if file1_format not in SUPPORTED_FORMATS or file2_format not in SUPPORTED_FORMATS:

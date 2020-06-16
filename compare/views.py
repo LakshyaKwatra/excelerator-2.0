@@ -6,35 +6,15 @@ from django.conf import settings
 import os
 import json
 import pandas as pd
+import itertools
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if hasattr(obj, 'to_json'):
+            return obj.to_json(orient='records')
+        return json.JSONEncoder.default(self, obj)
 
 
-
-
-# def compare_files(request):
-#     target_data = get_object_data(Upload.objects.last())
-#     target_data_str = str(target_data)
-#     return render(request, 'compare/compare-files.html', {'target_data': target_data})
-#
-# def compare_files(request):
-#     context = {}
-#     form = ComparisonForm()
-#     context['form'] = form
-#     file1sheet1strings = get_file1_sheet1_strings()
-#     file1sheet2strings = get_file1_sheet2_strings()
-#     file2sheet1strings = get_file2_sheet1_strings()
-#     file2sheet2strings = get_file2_sheet2_strings()
-#
-#     json_file1sheet1strings = json.dumps(file1sheet1strings)
-#     json_file1sheet2strings = json.dumps(file1sheet2strings)
-#     json_file2sheet1strings = json.dumps(file2sheet1strings)
-#     json_file2sheet2strings = json.dumps(file2sheet2strings)
-#
-#     context['json_file1sheet1strings'] = json_file1sheet1strings
-#     context['json_file1sheet2strings'] = json_file1sheet2strings
-#     context['json_file2sheet1strings'] = json_file2sheet1strings
-#     context['json_file2sheet2strings'] = json_file2sheet2strings
-#
-#     return render(request, 'compare/compare-files.html', context)
 
 
 def compare_files(request):
@@ -48,14 +28,68 @@ def compare_files(request):
         select_file2column = filter_data.get('file2column')
         select_pivot_column = filter_data.get('pivot_column')
         select_filter = filter_data.get('filter')
+        file1_df = pd.read_json(json.load(open('compare/static/compare/data/file1df_dict.json'))[select_file1sheet])
+        file2_df = pd.read_json(json.load(open('compare/static/compare/data/file2df_dict.json'))[select_file2sheet])
+        if select_pivot_column == 'No Pivot Required':
+            pivot_column_name = select_pivot_column
+            pivot_df = None
+            pivot_values = None
+        else:
+            pivot_column_name = select_pivot_column[10:]
+            pivot_df_name = select_pivot_column[1:7]
+            if pivot_df_name == 'File-1':
+                pivot_df = file1_df
+            else:
+                pivot_df = file2_df
+            pivot_values = get_values(pivot_df, pivot_column_name)
+
+        values1 = get_values(file1_df, select_file1column)
+        values2 = get_values(file2_df, select_file2column)
+        a = []
+        b = []
+        c = []
+        if select_pivot_column == 'No Pivot Required':
+            if select_filter == 'View Unique':
+                for v1, v2 in itertools.zip_longest(values1, values2, fillvalue=''):
+                    if v1 != v2:
+                        a.append(v1)
+                        b.append(v2)
+                values1, values2 = a, b
+            elif select_filter == 'View Same':
+                for v1, v2 in itertools.zip_longest(values1, values2, fillvalue=''):
+                    if v1 == v2:
+                        a.append(v1)
+                        b.append(v2)
+                values1, values2 = a, b
+            print(values1, values2)
+            context['zipper'] = itertools.zip_longest(values1, values2, fillvalue='')
+        else:
+            if select_filter == 'View Unique':
+                for v1, v2, p in itertools.zip_longest(values1, values2, pivot_values, fillvalue=''):
+                    if v1 != v2:
+                        a.append(v1)
+                        b.append(v2)
+                        c.append(p)
+                values1, values2, pivot_values = a, b, c
+            elif select_filter == 'View Same':
+                for v1, v2, p in itertools.zip_longest(values1, values2, pivot_values, fillvalue=''):
+                    if v1 == v2:
+                        a.append(v1)
+                        b.append(v2)
+                        c.append(p)
+                values1, values2, pivot_values = a, b, c
+            context['zipper'] = itertools.zip_longest(values1, values2, pivot_values, fillvalue='')
+
         context['isPOST'] = True
         context['select_file1sheet'] = select_file1sheet
         context['select_file1column'] = select_file1column
         context['select_file2sheet'] = select_file2sheet
         context['select_file2column'] = select_file2column
         context['select_pivot_column'] = select_pivot_column
+        context['pivot_column_name'] = pivot_column_name
         context['select_filter'] = select_filter
         context['form'] = form
+
         return render(request, 'compare/compare-files.html', context)
     else:
         context = {}
@@ -69,6 +103,36 @@ def compare_files(request):
         context['form'] = form
         context['isPOST'] = False
         return render(request, 'compare/compare-files.html', context)
+
+
+def get_values(df, select_column):
+    col_list = select_column.split(' ➤ ')
+    col_head_dict, skip_rows = fill_cols(df)
+    col_index = -1
+    #print("Selected Column:",select_column)
+    if skip_rows == 0:
+        values = list(df[select_column])
+    else:
+        for i in range(len(df.columns)):
+            flag = True
+            back_counter = -1
+            for j in range(len(col_head_dict[i+1]) - 1):
+                if col_head_dict[i+1][-j-1] != '':
+                    #print(col_head_dict[i+1][-j-1], col_list[back_counter])
+                    if col_head_dict[i+1][-j-1] != col_list[back_counter]:
+                        flag = False
+                        break
+                    back_counter -= 1
+            if flag == True:
+                #print("True")
+                if col_head_dict[i+1][0] == col_list[0] or 'Unnamed:' in col_head_dict[i+1][0]:
+                    col_index = i
+                    break
+        #print("col index:",col_index)
+        values = list(df[df.columns[col_index]][skip_rows:])
+    return values
+
+
 
 def get_object_data(object):
     target_object = object
@@ -99,6 +163,8 @@ def get_object_data(object):
         file1dict = get_xl_df_dict(file1path)
         file1sheets = list(file1dict.keys())
         file1dropdown_dict = get_dropdown_dict(file1dict)
+        with open('compare/static/compare/data/file1df_dict.json', 'w') as fp:
+            json.dump(file1dict,fp,cls=JSONEncoder)
 
     if not file2_is_xl:
         file2df = get_xsv_df(file2path, file2format)
@@ -107,6 +173,8 @@ def get_object_data(object):
         file2dict = get_xl_df_dict(file2path)
         file2sheets = list(file2dict.keys())
         file2dropdown_dict = get_dropdown_dict(file2dict)
+        with open('compare/static/compare/data/file2df_dict.json', 'w') as fp:
+            json.dump(file2dict,fp,cls=JSONEncoder)
 
     target_data = {
         "file1name": file1name,
@@ -125,6 +193,8 @@ def get_object_data(object):
         "file2dropdown_dict": file2dropdown_dict
     }
     return target_data
+
+
 
 
 def get_xsv_df(filepath, fileformat):
